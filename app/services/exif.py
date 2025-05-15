@@ -2,17 +2,21 @@ from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 from datetime import datetime
 
-def _get_decimal_from_dms(dms, ref):
-    degrees, minutes, seconds = dms
-    decimal = degrees + (minutes / 60.0) + (seconds / 3600.0)
-    if ref in ["S", "W"]:
-        decimal = -decimal
-    return decimal
+def _convert_to_degrees(value):
+    def to_float(x):
+        return float(x[0]) / float(x[1]) if isinstance(x, tuple) else float(x)
+
+    d = to_float(value[0])
+    m = to_float(value[1])
+    s = to_float(value[2])
+
+    return d + (m / 60.0) + (s / 3600.0)
 
 def extract_exif_data(image_path: str) -> dict:
     try:
         image = Image.open(image_path)
         exif_data = image._getexif()
+       
         if not exif_data:
             return {"datetime": None, "latitude": None, "longitude": None}
 
@@ -27,7 +31,7 @@ def extract_exif_data(image_path: str) -> dict:
         for tag_id, value in exif_data.items():
             tag = TAGS.get(tag_id, tag_id)
 
-            if tag == "DateTimeOriginal" or tag == "DateTime":
+            if tag in ["DateTimeOriginal", "DateTime"]:
                 try:
                     data["datetime"] = datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
                 except Exception:
@@ -39,14 +43,19 @@ def extract_exif_data(image_path: str) -> dict:
                     gps_info[gps_tag] = value[key]
 
         if "GPSLatitude" in gps_info and "GPSLatitudeRef" in gps_info:
-            lat_dms = [float(x[0]) / float(x[1]) for x in gps_info["GPSLatitude"]]
-            data["latitude"] = _get_decimal_from_dms(lat_dms, gps_info["GPSLatitudeRef"])
+            lat = _convert_to_degrees(gps_info["GPSLatitude"])
+            if gps_info["GPSLatitudeRef"] in ["S"]:
+                lat = -lat
+            data["latitude"] = lat
 
         if "GPSLongitude" in gps_info and "GPSLongitudeRef" in gps_info:
-            lon_dms = [float(x[0]) / float(x[1]) for x in gps_info["GPSLongitude"]]
-            data["longitude"] = _get_decimal_from_dms(lon_dms, gps_info["GPSLongitudeRef"])
+            lon = _convert_to_degrees(gps_info["GPSLongitude"])
+            if gps_info["GPSLongitudeRef"] in ["W"]:
+                lon = -lon
+            data["longitude"] = lon
 
         return data
 
-    except Exception:
+    except Exception as e:
+        print("EXIF error:", e)
         return {"datetime": None, "latitude": None, "longitude": None}
