@@ -1,10 +1,9 @@
-import os
 from pathlib import Path
-from fastapi import UploadFile, File, APIRouter
+from fastapi import UploadFile, File, APIRouter, Depends
+from sqlalchemy.orm import Session
+
 from services.exif import extract_exif_data
 from db.models import ScrapbookItem
-from sqlalchemy.orm import Session
-from fastapi import Depends
 from db.database import get_db
 
 router = APIRouter()
