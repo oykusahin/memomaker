@@ -1,7 +1,36 @@
+# Python cache and compiled files
 __pycache__/
 *.py[cod]
 *$py.class
-test/*
-app/storage/*
+*.pyc
+
+# FastAPI logs
+*.log
+
+# Environment files
 .env
+
+# Test files and temp storage
+test/
+app/storage/*
 app/.gradio/flagged/*
+
+# Database files (if using SQLite or local DBs)
+*.sqlite3
+*.db
+
+# Node.js frontend (React)
+frontend/node_modules/*
+frontend/build/
+frontend/.DS_Store
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Editor/IDE settings (optional but recommended)
+.vscode/
+.idea/
