@@ -20,9 +20,10 @@ async def get_items(db: Session = Depends(get_db)):
         result.append({
             "id": item.id,
             "filename": item.filename,
-            "datetime": str(item.exif_datetime) if item.exif_datetime else None,
-            "latitude": item.exif_latitude,
-            "longitude": item.exif_longitude
+            "datetime": str(item.datetime) if item.datetime else None,
+            "latitude": item.latitude,
+            "longitude": item.longitude,
+
         })
 
     return result
@@ -37,11 +38,9 @@ async def get_item_by_id(item_id: int, db: Session = Depends(get_db)):
     return {
         "id": item.id,
         "filename": item.filename,
-        "datetime": str(item.exif_datetime) if item.exif_datetime else None,
-        "latitude": item.exif_latitude,
-        "longitude": item.exif_longitude,
-        "location_text": item.location_text,
-        "description_text": item.description_text,
+        "datetime": str(item.datetime) if item.datetime else None,
+        "latitude": item.latitude,
+        "longitude": item.longitude,
         "status": item.processing_status
     }
 
