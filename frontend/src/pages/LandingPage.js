@@ -15,53 +15,53 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   return (
+  <Box
+    sx={{
+      minHeight: "100vh",
+      backgroundImage: `url(${background})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      position: "relative",
+      zIndex: 0,
+    }}
+  >
+  <Box sx={{ pt: "100px", pb: 8 }}>
     <Box
       sx={{
-        minHeight: "100vh",
-        backgroundImage: `url(${background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        pt: "100px", // space for fixed header
-        pb: 8,
+        minHeight: "60vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        color: "#fff",
+        px: 3,
       }}
     >
-      {/* Hero Section */}
-      <Box
-        sx={{
-          minHeight: "60vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          color: "#fff",
-          px: 3,
-        }}
-      >
-        <Container maxWidth="md">
-          <Typography variant="h2" fontWeight={700} gutterBottom>
-            Memomaker
-          </Typography>
-          <Typography variant="h5" sx={{ opacity: 0.9 }} paragraph>
-            Turn your memories into beautiful scrapbooks using AI.
-          </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => navigate("/upload")}
-          >
-            Start Building Your Scrapbook
-          </Button>
-        </Container>
-      </Box>
-
-      {/* Feature Section */}
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
-        <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
-          <StatsSection />
-        </Paper>
+      <Container maxWidth="md">
+        <Typography variant="h2" fontWeight={700} gutterBottom>
+          Memomaker
+        </Typography>
+        <Typography variant="h5" sx={{ opacity: 0.9 }} paragraph>
+          Turn your memories into beautiful scrapbooks using AI.
+        </Typography>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => navigate("/upload")}
+        >
+          Start Building Your Scrapbook
+        </Button>
       </Container>
     </Box>
+
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
+        <StatsSection />
+      </Paper>
+    </Container>
+  </Box>
+</Box>
   );
 };
 

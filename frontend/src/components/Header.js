@@ -27,9 +27,9 @@ const Header = () => {
         bgcolor: "rgba(255, 255, 255, 0.85)",
         backdropFilter: "blur(12px)",
         color: "#000",
-        borderRadius: 3,
+        borderRadius: 5,
         zIndex: theme.zIndex.drawer + 1,
-        px: { xs: 2, sm: 4 },
+        px: { xs: 2, sm: 2 },
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -41,11 +41,8 @@ const Header = () => {
             component="img"
             src={logo}
             alt="Memomaker Logo"
-            sx={{ height: 60}}
+            sx={{ height: 75, sm: 2, pl: 2}}
           />
-          <Typography variant="h6" fontWeight={600} noWrap>
-            Memomaker
-          </Typography>
         </Box>
 
         {!isMobile && (
