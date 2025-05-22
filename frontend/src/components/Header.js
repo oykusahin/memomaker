@@ -1,7 +1,15 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, Box, useTheme, useMediaQuery } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Button,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png"; // Replace with your actual logo path
+import logo from "../assets/logo.png";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -10,7 +18,7 @@ const Header = () => {
 
   return (
     <AppBar
-      position="fixed"
+      position="sticky"
       elevation={6}
       sx={{
         top: 16,
@@ -20,11 +28,11 @@ const Header = () => {
         backdropFilter: "blur(12px)",
         color: "#000",
         borderRadius: 3,
-        transition: "all 0.3s ease-in-out",
         zIndex: theme.zIndex.drawer + 1,
+        px: { xs: 2, sm: 4 },
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between", px: { xs: 2, sm: 4 } }}>
+      <Toolbar sx={{ justifyContent: "space-between" }}>
         <Box
           sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
           onClick={() => navigate("/")}
@@ -33,17 +41,29 @@ const Header = () => {
             component="img"
             src={logo}
             alt="Memomaker Logo"
-            sx={{ height: 40, mr: 2 }}
+            sx={{ height: 60}}
           />
           <Typography variant="h6" fontWeight={600} noWrap>
             Memomaker
           </Typography>
         </Box>
 
-        {/* Optional Nav */}
-        {/* <Box>
-          <Button color="inherit">Docs</Button>
-        </Box> */}
+        {!isMobile && (
+          <Box display="flex" gap={2}>
+            <Button color="inherit" onClick={() => navigate("/about")}>
+              About Us
+            </Button>
+            <Button color="inherit" onClick={() => navigate("/wedding")}>
+              Wedding
+            </Button>
+            <Button variant="contained" onClick={() => navigate("/upload")}>
+              Start Building
+            </Button>
+            <Button variant="outlined" onClick={() => navigate("/login")}>
+              Log In
+            </Button>
+          </Box>
+        )}
       </Toolbar>
     </AppBar>
   );
