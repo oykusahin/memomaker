@@ -50,8 +50,8 @@ const Header = () => {
             <Button color="inherit" onClick={() => navigate("/about")}>
               About Us
             </Button>
-            <Button color="inherit" onClick={() => navigate("/wedding")}>
-              Wedding
+            <Button color = "secondary" variant="contained" onClick={() => navigate("/wedding")}>
+              For Wedding
             </Button>
             <Button variant="contained" onClick={() => navigate("/upload")}>
               Start Building
