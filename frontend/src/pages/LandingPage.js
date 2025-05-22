@@ -56,9 +56,7 @@ const LandingPage = () => {
     </Box>
 
     <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
         <StatsSection />
-      </Paper>
     </Container>
   </Box>
 </Box>

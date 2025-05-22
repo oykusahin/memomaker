@@ -3,8 +3,7 @@ import {
   Box,
   Grid,
   Typography,
-  Paper,
-  useTheme,
+  Paper
 } from "@mui/material";
 import CodeIcon from "@mui/icons-material/Code";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
@@ -14,37 +13,62 @@ import DevicesIcon from "@mui/icons-material/Devices";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import BackupIcon from "@mui/icons-material/Backup";
+import { useTheme } from "@mui/material/styles";
+
 
 const StatsSection = () => {
   const theme = useTheme();
 
   return (
-    <Box sx={{ py: 8, px: 2, backgroundColor: "#f8f9fa" }}>
-      <Grid container spacing={4} justifyContent="center">
-        {/* Top Statistics Row */}
-        {[
-          { value: "300+", label: "Coded Elements", icon: <CodeIcon color="primary" /> },
-          { value: "100+", label: "Design Blocks", icon: <ViewModuleIcon color="primary" /> },
-          { value: "41", label: "Pages", icon: <InsertDriveFileIcon color="primary" /> },
-        ].map((stat, index) => (
-          <Grid item xs={12} sm={4} key={index} textAlign="center">
-            <Typography variant="h4" fontWeight={700}>
-              {stat.value}
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
-              {stat.label}
-            </Typography>
-          </Grid>
-        ))}
-      </Grid>
+    <Paper
+      elevation={4}
+      sx={{
+        px: { xs: 3, sm: 6 },
+        py: { xs: 5, sm: 8 },
+        borderRadius: 4,
+        backgroundColor: "#fff",
+        maxWidth: "1300px",
+        margin: "0 auto",
+      }}
+    >
+      <Box
+  display="flex"
+  flexDirection={{ xs: "column", sm: "row" }}
+  justifyContent="center"
+  alignItems="center"
+  gap={4}
+  mb={4}
+>
+  {[
+    { value: "300+", label: "Coded Elements", icon: <CodeIcon color="primary" /> },
+    { value: "100+", label: "Design Blocks", icon: <ViewModuleIcon color="primary" /> },
+    { value: "41", label: "Pages", icon: <InsertDriveFileIcon color="primary" /> },
+  ].map((stat, index) => (
+    <Box
+      key={index}
+      textAlign="center"
+      px={3}
+      flex={{ xs: "unset", sm: 1 }}
+    >
+      <Typography variant="h4" fontWeight={700} color={theme.palette.primary.main}>
+        {stat.value}
+      </Typography>
+      <Typography variant="subtitle1" color="text.primary">
+        {stat.label}
+      </Typography>
+    </Box>
+  ))}
+</Box>
 
-      <Grid container spacing={4} mt={6}>
-        {/* Left Large Blue Box */}
+
+      {/* Bottom Content 
+      <Grid container spacing={4}> */}
+        {/* Left Large Highlight Box 
         <Grid item xs={12} md={4}>
           <Box
             sx={{
               height: "100%",
-              bgcolor: "#2196f3",
+              bgcolor: theme.palette.primary.main,
               borderRadius: 3,
               p: 4,
               color: "#fff",
@@ -53,6 +77,10 @@ const StatsSection = () => {
               flexDirection: "column",
               justifyContent: "center",
               minHeight: 240,
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                transform: "rotateY(8deg)",
+              },
             }}
           >
             <AutoAwesomeIcon sx={{ fontSize: 40, mb: 2 }} />
@@ -63,9 +91,9 @@ const StatsSection = () => {
               All the MUI components redesigned to match modern aesthetic and usability.
             </Typography>
           </Box>
-        </Grid>
+        </Grid>*/}
 
-        {/* Right-side Features Grid */}
+        {/* Right-side Grid 
         <Grid item xs={12} md={8}>
           <Grid container spacing={2}>
             {[
@@ -98,6 +126,9 @@ const StatsSection = () => {
                     display: "flex",
                     alignItems: "flex-start",
                     gap: 2,
+                    bgcolor: "#f8f9fa",
+                    borderRadius: 2,
+                    height: "100%",
                   }}
                 >
                   {item.icon}
@@ -114,8 +145,8 @@ const StatsSection = () => {
             ))}
           </Grid>
         </Grid>
-      </Grid>
-    </Box>
+      </Grid>*/}
+    </Paper>
   );
 };
 
