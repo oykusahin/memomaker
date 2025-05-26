@@ -7,6 +7,7 @@ import StepUpload from "../pages/StepUpload";
 import StepGallery from "../pages/StepGallery";
 import AboutUs from "../pages/AboutUsPage";
 import ForWedding from "../pages/ForWeddingPage"
+import TestPage from "../pages/TestPage"
 
 const AppRouter = () => {
   return (
@@ -16,6 +17,7 @@ const AppRouter = () => {
       <Route path="/wedding" element={<ForWedding/>} />
       <Route path="/upload" element={<StepUpload />} />
       <Route path="/gallery" element={<StepGallery />} />
+      <Route path="/test" element={<TestPage />} />
     </Routes>
   );
 };
