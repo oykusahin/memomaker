@@ -64,10 +64,10 @@ const StepUpload = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2} mb={3}>
-        <Grid item xs={12}>
-          <Box sx={{ px: { xs: 1, sm: 3 } }}>
+    <Box sx={{ border: '1px solid red' }}>
+      <Grid container spacing={2} mb={2}>
+        <Grid item xs={12} sx={{ flexGrow: 1 }}>
+          <Box>
             <StepperWrapper activeStep={0} />
           </Box>
         </Grid>
@@ -81,28 +81,10 @@ const StepUpload = () => {
         <Grid item>
           <Typography variant="h5">Step 1: Upload Your Photos</Typography>
         </Grid>
-        <Grid item>
-          {prev && (
-            <Button onClick={() => navigate(prev)} sx={{ mr: 1 }}>
-              Back
-            </Button>
-          )}
-          {next && (
-            <Button
-              variant="contained"
-              onClick={() => navigate(next)}
-              disabled={!uploaded}
-            >
-              Next
-            </Button>
-          )}
-        </Grid>
       </Grid>
 
-      {/* Grid Layout with nested structure */}
-      <Grid container spacing={4}>
-        {/* Left side - drop/upload area */}
-        <Grid item xs={12} md={6}>
+      
+        <Grid item xs={12} sx={{ flexGrow: 1 }}>
           <Paper
             elevation={3}
             onDragOver={(e) => e.preventDefault()}
@@ -136,29 +118,26 @@ const StepUpload = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <InputLabel>Selected Files</InputLabel>
-              <Typography variant="body2" color="text.secondary">
+        <Grid container direction="column" spacing={2} mb={2} alignItems="center">
+          <Grid item xs={12}>
+          <InputLabel>Selected Files</InputLabel>
+            <Typography variant="body2" color="text.secondary">
                 {files.length > 0
                   ? `${files.length} file(s) ready to upload`
                   : "No files selected"}
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12}>
-              <Button
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+          <Button
                 fullWidth
                 variant="contained"
                 onClick={handleUpload}
                 disabled={uploading || files.length === 0}
-              >
-                Upload Files
-              </Button>
-            </Grid>
-
-            <Grid item xs={12}>
+          >
+            Upload Files
+          </Button>
+          </Grid>
+          <Grid item>
               {uploading && <LinearProgress sx={{ mt: 2 }} />}
               {status && (
                 <Typography
@@ -169,10 +148,26 @@ const StepUpload = () => {
                   {status}
                 </Typography>
               )}
-            </Grid>
           </Grid>
-        </Grid>
-      </Grid>
+          </Grid>
+          <Grid spacing={2} container xs={12} justifyContent="flex-end">
+          <Grid item xs={2}>
+            {prev && (
+              <Button onClick={() => navigate(prev)} sx={{ mr: 1 }}>
+                Back
+              </Button>
+            )}
+            {next && (
+              <Button
+                variant="contained"
+                onClick={() => navigate(next)}
+                disabled={!uploaded}
+              >
+                Next
+              </Button>
+            )}
+          </Grid>
+          </Grid>
     </Box>
   );
 };
