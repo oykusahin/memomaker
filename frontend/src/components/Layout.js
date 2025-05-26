@@ -11,20 +11,24 @@ const Layout = ({ children }) => {
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
       <Header />
-      <Container
+      <Box
         component="main"
         sx={{
-          flex: 1,
-          mt: isLanding ? 0 : { xs: 8, sm: 10 }, 
-          px: 0,
+          flexGrow: 1,
+          mt: isLanding ? 0 : { xs: 2, sm: 1 },
+          px: { xs: 0, sm: 0 },
+          py: { xs: 1, sm: 1 },
+          width: "100%",
         }}
       >
-        {children}
-      </Container>
+        <Container maxWidth="lg">
+          {children}
+        </Container>
+      </Box>
+
       <Footer />
     </Box>
   );
 };
-
 
 export default Layout;
