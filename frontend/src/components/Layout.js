@@ -15,9 +15,9 @@ const Layout = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          mt: isLanding ? 0 : { xs: 2, sm: 1 },
-          px: { xs: 0, sm: 0 },
-          py: { xs: 1, sm: 1 },
+          mt: isLanding ? 0 : { xs: 4, sm: 5 },
+          px: { xs: 2, sm: 3 },
+          py: { xs: 2, sm: 3 },
           width: "100%",
         }}
       >
