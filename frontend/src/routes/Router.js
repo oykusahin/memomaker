@@ -11,6 +11,7 @@ import TestPage from "../pages/TestPage";
 import AboutUsPage from "../pages/AboutUsPage";
 import Team from "../pages/TeamPage";
 import PrivacyPolicy from "../pages/PrivacyPolicyPage";
+import StepFaceSelection from "../pages/StepFaceSelection";
 
 const AppRouter = () => {
   return (
@@ -23,6 +24,7 @@ const AppRouter = () => {
       <Route path="/test" element={<TestPage />} />
       <Route path="/team" element={<Team />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/face-selection" element={<StepFaceSelection />} />
     </Routes>
   );
 };

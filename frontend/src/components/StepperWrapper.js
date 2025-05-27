@@ -7,6 +7,7 @@ import StepLabel from "@mui/material/StepLabel";
 
 const steps = [
   { label: "Upload Images", path: "/upload" },
+  { label: "Select People", path: "/face-selection" },
   { label: "View Gallery", path: "/gallery" },
   { label: "Scrapbook View", path: "/scrapbook" },
 ];
