@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
+import AboutMenu from "./AboutMenu";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -30,27 +31,27 @@ const Header = () => {
         borderRadius: 5,
         zIndex: theme.zIndex.drawer + 1,
         px: { xs: 2, sm: 2 },
-      }}
-    >
+      }}>
       <Toolbar sx={{ justifyContent: "space-between" }}>
         <Box
           sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-          onClick={() => navigate("/")}
-        >
+          onClick={() => navigate("/")}>
           <Box
             component="img"
             src={logo}
             alt="Memomaker Logo"
-            sx={{ height: 75, sm: 2, pl: 2}}
+            sx={{ height: 75, sm: 2, pl: 2 }}
           />
         </Box>
 
         {!isMobile && (
           <Box display="flex" gap={2}>
-            <Button color="inherit" onClick={() => navigate("/about")}>
-              About Us
-            </Button>
-            <Button color = "secondary" variant="contained" onClick={() => navigate("/wedding")}>
+            <AboutMenu />
+
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={() => navigate("/wedding")}>
               For Wedding
             </Button>
             <Button variant="contained" onClick={() => navigate("/upload")}>
