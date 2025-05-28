@@ -14,6 +14,7 @@ import {
   ListItemText,
   IconButton,
   Fade,
+  CircularProgress,
 } from "@mui/material";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -121,41 +122,63 @@ const StepUpload = () => {
           style={{ display: "none" }}
         />
       </Paper>
-
       <Fade in={files.length > 0}>
         <Box>
           <InputLabel sx={{ mb: 1 }}>Selected Files</InputLabel>
-          <List dense>
-            {files.map((file, idx) => (
-              <ListItem
-                key={idx}
-                secondaryAction={
-                  <IconButton edge="end" onClick={() => handleRemoveFile(idx)}>
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                }>
-                <ListItemIcon>
-                  <InsertPhotoIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText primary={file.name} />
-              </ListItem>
-            ))}
-          </List>
+          <Box
+            sx={{
+              maxHeight: 220,
+              minHeight: 60,
+              overflowY: "auto",
+              borderRadius: 2,
+              border: "1px solid #e0e0e0",
+              mb: 2,
+              background: "#fff",
+              // Prevent the list from pushing content below it
+              position: "relative",
+            }}>
+            <List dense sx={{ p: 0 }}>
+              {files.map((file, idx) => (
+                <ListItem
+                  key={idx}
+                  secondaryAction={
+                    <IconButton
+                      edge="end"
+                      onClick={() => handleRemoveFile(idx)}>
+                      <DeleteIcon color="error" />
+                    </IconButton>
+                  }>
+                  <ListItemIcon>
+                    <InsertPhotoIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText primary={file.name} />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
         </Box>
       </Fade>
-
-      <Grid container spacing={2} mt={2} alignItems="center">
+      <Grid container spacing={2} mt={4} alignItems="center">
         <Grid item xs={12} sm={6}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            startIcon={<CloudUploadIcon />}
-            onClick={handleUpload}
-            disabled={uploading || files.length === 0}
-            sx={{ py: 1.2, fontWeight: 600 }}>
-            {uploading ? "Uploading..." : "Upload Files"}
-          </Button>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              startIcon={<CloudUploadIcon />}
+              onClick={handleUpload}
+              disabled={uploading || files.length === 0}
+              sx={{ py: 1.2, fontWeight: 600, flex: 1 }}>
+              {uploading ? "Uploading..." : "Upload Files"}
+            </Button>
+            {uploading && (
+              <CircularProgress
+                size={28}
+                sx={{ ml: 2, color: "primary.main" }}
+                thickness={5}
+              />
+            )}
+          </Box>
         </Grid>
         <Grid item xs={12} sm={6}>
           {uploaded && (
@@ -170,27 +193,33 @@ const StepUpload = () => {
           {uploading && <LinearProgress sx={{ mt: 1 }} />}
         </Grid>
       </Grid>
-
-      <Grid container spacing={2} mt={4} justifyContent="space-between">
-        <Grid item>
-          {prev && (
-            <Button variant="outlined" onClick={() => navigate(prev)}>
-              Back
-            </Button>
-          )}
-        </Grid>
-        <Grid item>
-          {next && (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => navigate(next)}
-              disabled={!uploaded}>
-              Next
-            </Button>
-          )}
-        </Grid>
-      </Grid>
+      <Box
+        mt={5}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center">
+        {prev && (
+          <Button
+            variant="outlined"
+            color="primary"
+            sx={{ px: 5, fontWeight: 600, borderRadius: 3 }}
+            onClick={() => navigate(prev)}>
+            Back
+          </Button>
+        )}
+        <Box flex={1} />
+        {next && (
+          <Button
+            variant="contained"
+            size="large"
+            color="secondary"
+            sx={{ px: 5, fontWeight: 700, borderRadius: 3 }}
+            disabled={!uploaded}
+            onClick={() => navigate(next)}>
+            Next
+          </Button>
+        )}
+      </Box>
     </Box>
   );
 };
