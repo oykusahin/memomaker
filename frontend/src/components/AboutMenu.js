@@ -1,7 +1,14 @@
-// src/components/AboutMenu.js
 import * as React from "react";
 import { styled, alpha } from "@mui/material/styles";
-import { Button, Menu, MenuItem, Divider } from "@mui/material";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Divider,
+  ListItemIcon,
+  Typography,
+  Box,
+} from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
 import InfoIcon from "@mui/icons-material/Info";
 import GppMaybeIcon from "@mui/icons-material/GppMaybe";
@@ -10,38 +17,40 @@ import { useNavigate } from "react-router-dom";
 
 const StyledMenu = styled((props) => (
   <Menu
-    elevation={0}
+    elevation={8}
     anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
     transformOrigin={{ vertical: "top", horizontal: "right" }}
     {...props}
   />
 ))(({ theme }) => ({
   "& .MuiPaper-root": {
-    borderRadius: 6,
+    borderRadius: 8,
     marginTop: theme.spacing(1),
-    minWidth: 180,
-    color: "rgb(55, 65, 81)",
+    minWidth: 210,
+    color: theme.palette.text.primary,
     boxShadow:
-      "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
+      "0 4px 24px 0 rgba(31, 38, 135, 0.10), 0 1.5px 4px 0 rgba(31, 38, 135, 0.08)",
+    background: "#fff",
+    border: `1.5px solid ${theme.palette.primary.light}`,
     "& .MuiMenu-list": {
-      padding: "4px 0",
+      padding: "8px 0",
     },
     "& .MuiMenuItem-root": {
+      borderRadius: 6,
+      margin: "0 8px",
+      transition: "background 0.15s",
       "& .MuiSvgIcon-root": {
-        fontSize: 18,
-        color: theme.palette.text.secondary,
-        marginRight: theme.spacing(1.5),
+        fontSize: 22,
+        color: theme.palette.primary.main,
+        marginRight: theme.spacing(2),
+      },
+      "&:hover": {
+        backgroundColor: alpha(theme.palette.primary.light, 0.13),
       },
       "&:active": {
-        backgroundColor: alpha(
-          theme.palette.primary.main,
-          theme.palette.action.selectedOpacity
-        ),
+        backgroundColor: alpha(theme.palette.primary.main, 0.18),
       },
     },
-    ...theme.applyStyles?.("dark", {
-      color: theme.palette.grey[300],
-    }),
   },
 }));
 
@@ -60,17 +69,29 @@ export default function AboutMenu() {
   };
 
   return (
-    <div>
+    <Box>
       <Button
         id="about-button"
         aria-controls={open ? "about-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         variant="contained"
+        color="secondary"
         disableElevation
         onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon />}>
-        About Us
+        endIcon={<KeyboardArrowDownIcon />}
+        sx={{
+          fontWeight: 700,
+          borderRadius: 3,
+          px: 3,
+          bgcolor: "secondary.main",
+          color: "#fff",
+          boxShadow: 2,
+          "&:hover": {
+            bgcolor: "secondary.dark",
+          },
+        }}>
+        About
       </Button>
       <StyledMenu
         id="about-menu"
@@ -81,18 +102,31 @@ export default function AboutMenu() {
         open={open}
         onClose={() => handleClose()}>
         <MenuItem onClick={() => handleClose("/about")} disableRipple>
-          <InfoIcon />
-          About Us
+          <ListItemIcon>
+            <InfoIcon />
+          </ListItemIcon>
+          <Typography variant="subtitle1" fontWeight={600}>
+            About Us
+          </Typography>
         </MenuItem>
         <MenuItem onClick={() => handleClose("/team")} disableRipple>
-          <GroupIcon />
-          Team
+          <ListItemIcon>
+            <GroupIcon />
+          </ListItemIcon>
+          <Typography variant="subtitle1" fontWeight={600}>
+            Team
+          </Typography>
         </MenuItem>
+        <Divider sx={{ my: 1, mx: 2 }} />
         <MenuItem onClick={() => handleClose("/privacy-policy")} disableRipple>
-          <GppMaybeIcon />
-          Data Privacy
+          <ListItemIcon>
+            <GppMaybeIcon />
+          </ListItemIcon>
+          <Typography variant="subtitle1" fontWeight={600}>
+            Data Privacy
+          </Typography>
         </MenuItem>
       </StyledMenu>
-    </div>
+    </Box>
   );
 }
