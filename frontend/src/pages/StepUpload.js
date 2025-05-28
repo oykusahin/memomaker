@@ -8,7 +8,17 @@ import {
   LinearProgress,
   Paper,
   Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  IconButton,
+  Fade,
 } from "@mui/material";
+import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getNextRoute, getPreviousRoute } from "../utils/navigation";
 import StepperWrapper from "../components/StepperWrapper";
@@ -39,6 +49,10 @@ const StepUpload = () => {
     setUploaded(false);
   };
 
+  const handleRemoveFile = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleUpload = async () => {
     if (files.length === 0) return;
     setUploading(true);
@@ -51,9 +65,10 @@ const StepUpload = () => {
     });
 
     try {
-      await axios.post("http://localhost:8000/api/uploadfile/", formData);
+      await axios.post("http://localhost:8000/api/uploadfiles/", formData);
       setStatus("Upload successful!");
       setUploaded(true);
+      setFiles([]);
     } catch (error) {
       console.error(error);
       setStatus("Upload failed.");
@@ -64,110 +79,118 @@ const StepUpload = () => {
   };
 
   return (
-    <Box sx={{ border: '1px solid red' }}>
-      <Grid container spacing={2} mb={2}>
-        <Grid item xs={12} sx={{ flexGrow: 1 }}>
-          <Box>
-            <StepperWrapper activeStep={0} />
-          </Box>
-        </Grid>
-      </Grid>
-      <Grid
-        container
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
-      >
-        <Grid item>
-          <Typography variant="h5">Step 1: Upload Your Photos</Typography>
-        </Grid>
-      </Grid>
+    <Box sx={{ maxWidth: 600, mx: "auto", mt: 4 }}>
+      <StepperWrapper />
+      <Paper
+        elevation={4}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+        onClick={() => document.getElementById("fileInput").click()}
+        sx={{
+          minHeight: 220,
+          p: 4,
+          border: "2px dashed",
+          borderColor: "primary.light",
+          borderRadius: 3,
+          cursor: "pointer",
+          background: "linear-gradient(135deg, #f8fafc 60%, #e3e6f3 100%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          mb: 3,
+          transition: "box-shadow 0.2s",
+          "&:hover": {
+            boxShadow: 6,
+            borderColor: "primary.main",
+          },
+        }}>
+        <CloudUploadIcon color="primary" sx={{ fontSize: 48, mb: 2 }} />
+        <Typography variant="h6" color="primary.main" gutterBottom>
+          Drag & drop images here, or click to select
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          (JPEG, PNG, up to 10 files)
+        </Typography>
+        <input
+          type="file"
+          id="fileInput"
+          multiple
+          accept="image/*"
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+        />
+      </Paper>
 
-      
-        <Grid item xs={12} sx={{ flexGrow: 1 }}>
-          <Paper
-            elevation={3}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}
-            onClick={() => document.getElementById("fileInput").click()}
-            sx={{
-              height: "100%",
-              minHeight: 280,
-              p: 4,
-              border: "2px dashed #ccc",
-              borderRadius: 2,
-              cursor: "pointer",
-              backgroundColor: "#fafafa",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-            }}
-          >
-            <Typography variant="body1" color="text.secondary">
-              Drag and drop images here or click to select from your device
-            </Typography>
-            <input
-              type="file"
-              id="fileInput"
-              multiple
-              accept="image/*"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
-          </Paper>
-        </Grid>
+      <Fade in={files.length > 0}>
+        <Box>
+          <InputLabel sx={{ mb: 1 }}>Selected Files</InputLabel>
+          <List dense>
+            {files.map((file, idx) => (
+              <ListItem
+                key={idx}
+                secondaryAction={
+                  <IconButton edge="end" onClick={() => handleRemoveFile(idx)}>
+                    <DeleteIcon color="error" />
+                  </IconButton>
+                }>
+                <ListItemIcon>
+                  <InsertPhotoIcon color="primary" />
+                </ListItemIcon>
+                <ListItemText primary={file.name} />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Fade>
 
-        <Grid container direction="column" spacing={2} mb={2} alignItems="center">
-          <Grid item xs={12}>
-          <InputLabel>Selected Files</InputLabel>
-            <Typography variant="body2" color="text.secondary">
-                {files.length > 0
-                  ? `${files.length} file(s) ready to upload`
-                  : "No files selected"}
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
+      <Grid container spacing={2} mt={2} alignItems="center">
+        <Grid item xs={12} sm={6}>
           <Button
-                fullWidth
-                variant="contained"
-                onClick={handleUpload}
-                disabled={uploading || files.length === 0}
-          >
-            Upload Files
+            fullWidth
+            variant="contained"
+            color="primary"
+            startIcon={<CloudUploadIcon />}
+            onClick={handleUpload}
+            disabled={uploading || files.length === 0}
+            sx={{ py: 1.2, fontWeight: 600 }}>
+            {uploading ? "Uploading..." : "Upload Files"}
           </Button>
-          </Grid>
-          <Grid item>
-              {uploading && <LinearProgress sx={{ mt: 2 }} />}
-              {status && (
-                <Typography
-                  variant="body2"
-                  color={uploaded ? "success.main" : "error"}
-                  sx={{ mt: 2 }}
-                >
-                  {status}
-                </Typography>
-              )}
-          </Grid>
-          </Grid>
-          <Grid spacing={2} container xs={12} justifyContent="flex-end">
-          <Grid item xs={2}>
-            {prev && (
-              <Button onClick={() => navigate(prev)} sx={{ mr: 1 }}>
-                Back
-              </Button>
-            )}
-            {next && (
-              <Button
-                variant="contained"
-                onClick={() => navigate(next)}
-                disabled={!uploaded}
-              >
-                Next
-              </Button>
-            )}
-          </Grid>
-          </Grid>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          {uploaded && (
+            <Box display="flex" alignItems="center" gap={1}>
+              <CheckCircleIcon color="success" />
+              <Typography color="success.main">Upload successful!</Typography>
+            </Box>
+          )}
+          {status && !uploaded && (
+            <Typography color="error.main">{status}</Typography>
+          )}
+          {uploading && <LinearProgress sx={{ mt: 1 }} />}
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={2} mt={4} justifyContent="space-between">
+        <Grid item>
+          {prev && (
+            <Button variant="outlined" onClick={() => navigate(prev)}>
+              Back
+            </Button>
+          )}
+        </Grid>
+        <Grid item>
+          {next && (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => navigate(next)}
+              disabled={!uploaded}>
+              Next
+            </Button>
+          )}
+        </Grid>
+      </Grid>
     </Box>
   );
 };
