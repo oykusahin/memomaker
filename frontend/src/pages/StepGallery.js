@@ -10,17 +10,9 @@ import {
   Checkbox,
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
   Fade,
   Container,
-  IconButton, // <-- Add this import
+  IconButton,
 } from "@mui/material";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import Favorite from "@mui/icons-material/Favorite";
@@ -28,14 +20,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import StepperWrapper from "../components/StepperWrapper";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getNextRoute, getPreviousRoute } from "../utils/navigation";
+import ImageDetailCard from "../components/ImageDetailCard"; // <-- New component
 
 const StepGallery = () => {
   const [items, setItems] = useState([]);
   const [selected, setSelected] = useState({});
-  const [captionDialogOpen, setCaptionDialogOpen] = useState(false);
-  const [captionTarget, setCaptionTarget] = useState(null);
-  const [editedCaption, setEditedCaption] = useState("");
-  const [captionMode, setCaptionMode] = useState("default");
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [detailTarget, setDetailTarget] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,44 +43,20 @@ const StepGallery = () => {
     setSelected((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const openCaptionEditor = (item) => {
-    setCaptionTarget(item);
-    setEditedCaption(item.description_text || "");
-    setCaptionDialogOpen(true);
+  const openDetailDialog = (item) => {
+    setDetailTarget(item);
+    setDetailDialogOpen(true);
   };
 
-  const handleGenerateCaption = async () => {
-    if (!captionTarget) return;
-
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/generate_caption/",
-        {
-          id: captionTarget.id,
-          mode: captionMode,
-        }
-      );
-      setEditedCaption(response.data.caption || "");
-    } catch (err) {
-      setEditedCaption("Caption generation failed.");
-    }
-  };
-
-  const handleCaptionSave = async () => {
-    if (!captionTarget) return;
-
-    await axios.put(`http://localhost:8000/api/items/${captionTarget.id}`, {
-      description_text: editedCaption,
-    });
-
+  const handleDetailSave = (updatedCaption) => {
     setItems((prev) =>
       prev.map((i) =>
-        i.id === captionTarget.id
-          ? { ...i, description_text: editedCaption }
+        i.id === detailTarget.id
+          ? { ...i, description_text: updatedCaption }
           : i
       )
     );
-    setCaptionDialogOpen(false);
+    setDetailDialogOpen(false);
   };
 
   const selectedCount = Object.values(selected).filter(Boolean).length;
@@ -122,7 +89,7 @@ const StepGallery = () => {
           textAlign="center"
           sx={{ maxWidth: 500, mx: "auto" }}>
           Select your favorite images for your scrapbook. Click the heart to
-          select, and edit captions as you wish.
+          select, and click an image or the edit icon to view and edit captions.
         </Typography>
 
         <Grid container spacing={4} justifyContent="center">
@@ -173,7 +140,7 @@ const StepGallery = () => {
                       borderTopLeftRadius: 4,
                       borderTopRightRadius: 4,
                     }}
-                    onClick={() => openCaptionEditor(item)}
+                    onClick={() => openDetailDialog(item)}
                   />
                   <CardContent sx={{ textAlign: "center", py: 2 }}>
                     <Typography
@@ -210,7 +177,7 @@ const StepGallery = () => {
                       <IconButton
                         size="small"
                         color="primary"
-                        onClick={() => openCaptionEditor(item)}
+                        onClick={() => openDetailDialog(item)}
                         sx={{ ml: 1 }}>
                         <EditIcon fontSize="small" />
                       </IconButton>
@@ -256,50 +223,19 @@ const StepGallery = () => {
           </Box>
         </Container>
 
-        {/* Caption Editor Dialog */}
+        {/* Image Detail Dialog */}
         <Dialog
-          open={captionDialogOpen}
-          onClose={() => setCaptionDialogOpen(false)}
+          open={detailDialogOpen}
+          onClose={() => setDetailDialogOpen(false)}
           fullWidth
           maxWidth="sm">
-          <DialogTitle>Edit Caption</DialogTitle>
-          <DialogContent>
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel id="caption-mode-label">Caption Mode</InputLabel>
-              <Select
-                labelId="caption-mode-label"
-                value={captionMode}
-                label="Caption Mode"
-                onChange={(e) => setCaptionMode(e.target.value)}>
-                <MenuItem value="default">Default</MenuItem>
-                <MenuItem value="romantic">Romantic</MenuItem>
-                <MenuItem value="historical">Historical</MenuItem>
-                <MenuItem value="journalistic">Journalistic</MenuItem>
-              </Select>
-            </FormControl>
-
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={handleGenerateCaption}
-              sx={{ mb: 2 }}>
-              Generate Caption
-            </Button>
-
-            <TextField
-              multiline
-              fullWidth
-              rows={4}
-              value={editedCaption}
-              onChange={(e) => setEditedCaption(e.target.value)}
+          {detailTarget && (
+            <ImageDetailCard
+              item={detailTarget}
+              onSave={handleDetailSave}
+              onClose={() => setDetailDialogOpen(false)}
             />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setCaptionDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleCaptionSave} variant="contained">
-              Save
-            </Button>
-          </DialogActions>
+          )}
         </Dialog>
       </Box>
     </Box>
