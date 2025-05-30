@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import background from "../assets/landing_image.jpg";
 import StatsSection from "../components/StatsSection";
+import NewsletterSignup from "../components/NewsletterSignup";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -105,7 +106,7 @@ const LandingPage = () => {
       <Container maxWidth="lg" sx={{ mt: { xs: 2, md: 4 }, mb: 6 }}>
         <StatsSection />
       </Container>
-
+      <NewsletterSignup />
       {/* Call to Action Footer */}
       <Box
         sx={{
