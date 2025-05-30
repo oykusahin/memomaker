@@ -23,6 +23,7 @@ const LandingPage = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
         position: "relative",
         zIndex: 0,
         display: "flex",
