@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -14,20 +14,21 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import StepperWrapper from "../components/StepperWrapper";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getNextRoute, getPreviousRoute } from "../utils/navigation";
-
-const detectedFaces = [
-  { id: 1, img: "/faces/face1.jpg", name: "Face 1" },
-  { id: 2, img: "/faces/face2.jpg", name: "Face 2" },
-  { id: 3, img: "/faces/face3.jpg", name: "Face 3" },
-  { id: 4, img: "/faces/face4.jpg", name: "Face 4" },
-];
+import axios from "axios";
 
 const StepFaceSelection = () => {
+  const [detectedFaces, setDetectedFaces] = useState([]);
   const [selectedFaces, setSelectedFaces] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const next = getNextRoute(location.pathname);
   const prev = getPreviousRoute(location.pathname);
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/faces/").then((res) => {
+      setDetectedFaces(res.data);
+    });
+  }, []);
 
   const toggleFace = (id) => {
     setSelectedFaces((prev) =>
