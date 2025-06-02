@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 import face_recognition
 from torchreid import utils
-from db.models import Person, PersonImageAssociation
+from db.models import Person, Face, Image as DBImage
 
 extractor = utils.FeatureExtractor(
     model_name='osnet_x1_0',
@@ -14,7 +14,6 @@ extractor = utils.FeatureExtractor(
 )
 
 def is_same_person(feature1, feature2, threshold=0.6):
-    """Compare face features using cosine similarity."""
     feature1 = np.array(feature1)
     feature2 = np.array(feature2)
     similarity = np.dot(feature1, feature2) / (np.linalg.norm(feature1) * np.linalg.norm(feature2))
@@ -27,21 +26,19 @@ def detect_and_store_faces(image_path, image_id, db):
     image = face_recognition.load_image_file(image_path)
     face_locations = face_recognition.face_locations(image)
 
-    # Load all existing persons
+    # Load all existing persons and their features
     existing_persons = db.query(Person).all()
     person_features = []
     for person in existing_persons:
-        if person.avatar_path and os.path.exists(person.avatar_path):
-            avatar = face_recognition.load_image_file(person.avatar_path)
-            avatar_feature = extractor(avatar)[0]
-            person_features.append((person, avatar_feature))
+        if person.feature_vector is not None:
+            person_features.append((person, np.array(person.feature_vector)))
 
     base_filename = Path(image_path).stem
 
     for idx, (top, right, bottom, left) in enumerate(face_locations):
         face_image = image[top:bottom, left:right]
         pil_image = Image.fromarray(face_image)
-        feature = extractor(face_image)[0]
+        feature = extractor(face_image)[0].tolist()
 
         matched_person = None
         for person, avatar_feature in person_features:
@@ -49,32 +46,33 @@ def detect_and_store_faces(image_path, image_id, db):
                 matched_person = person
                 break
 
-        if matched_person:
-            # Add new image link to existing person
-            association = PersonImageAssociation(
-                person_id=matched_person.person_id,
-                image_id=image_id,
-                is_wanted=False
-            )
-            db.add(association)
-        else:
-            # Create new person and save face crop as avatar
-            face_id = str(uuid.uuid4())
-            face_filename = f"{base_filename}_face_{idx}_{face_id}.jpg"
-            face_path = os.path.join(output_dir, face_filename)
-            pil_image.save(face_path)
+        face_id = str(uuid.uuid4())
+        face_filename = f"{base_filename}_face_{idx}_{face_id}.jpg"
+        face_path = os.path.join(output_dir, face_filename)
+        pil_image.save(face_path)
 
+        if matched_person:
+            person_id = matched_person.id
+        else:
+            # Create new person
+            person_id = str(uuid.uuid4())
             new_person = Person(
-                person_id=face_id,
-                avatar_path=face_path
+                id=person_id,
+                avatar_path=face_path,
+                feature_vector=feature
             )
             db.add(new_person)
+            db.flush()  # Get id for relationship
 
-            association = PersonImageAssociation(
-                person_id=face_id,
-                image_id=image_id,
-                is_wanted=False
-            )
-            db.add(association)
+        # Store face instance
+        new_face = Face(
+            id=face_id,
+            person_id=person_id,
+            image_id=image_id,
+            bbox={"top": top, "right": right, "bottom": bottom, "left": left},
+            feature_vector=feature,
+            face_path=face_path
+        )
+        db.add(new_face)
 
-        db.commit()
+    db.commit()
