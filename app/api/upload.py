@@ -1,53 +1,26 @@
-from fastapi import UploadFile, File, APIRouter, Depends
-from typing import List
+from fastapi import APIRouter, UploadFile, File, Depends
 from sqlalchemy.orm import Session
-from pathlib import Path
-
-from services.exif import extract_exif_data
-from db.models import ScrapbookItem
+from db.models import Image as DBImage
 from db.database import get_db
+from services.face_detector import detect_and_store_faces
+import os
+from datetime import datetime
 
 router = APIRouter()
 
-
-@router.post("/uploadfile/")
-async def create_upload_files(
-    files: List[UploadFile] = File(...),
-    mode: str = "default",
-    db: Session = Depends(get_db),
-):
-    storage_dir = Path("storage")
-    storage_dir.mkdir(parents=True, exist_ok=True)
-
-    responses = []
-
+@router.post("/uploadfiles/")
+async def upload_files(files: list[UploadFile] = File(...), db: Session = Depends(get_db)):
     for file in files:
-        file_path = storage_dir / file.filename
-        contents = await file.read()
-        file_path.write_bytes(contents)
-
-        exif = extract_exif_data(file_path)
-
-        item = ScrapbookItem(
-            filename=file.filename,
-            datetime=exif.get("datetime"),
-            latitude=exif.get("latitude"),
-            longitude=exif.get("longitude"),
-            description_text="Caption will go here",  # Optional: insert actual caption generation later
+        file_location = f"storage/{file.filename}"
+        with open(file_location, "wb") as f:
+            f.write(await file.read())
+        # Create image record
+        image = DBImage(
+            file_path=file_location,
+            datetime=datetime.now()
         )
-        db.add(item)
-        db.commit()
-        db.refresh(item)
-
-        responses.append(
-            {
-                "id": item.id,
-                "filename": item.filename,
-                "datetime": item.datetime,
-                "latitude": item.latitude,
-                "longitude": item.longitude,
-                "description": item.description_text,
-            }
-        )
-
-    return responses
+        db.add(image)
+        db.flush()  # Get image.id
+        detect_and_store_faces(file_location, image.id, db)
+    db.commit()
+    return {"status": "ok"}
