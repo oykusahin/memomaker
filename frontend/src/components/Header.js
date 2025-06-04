@@ -70,17 +70,6 @@ const Header = () => {
             alt="Memomaker Logo"
             sx={{ height: 48, width: "auto", mr: 2 }}
           />
-          <Typography
-            variant="h6"
-            fontWeight={800}
-            sx={{
-              letterSpacing: 1,
-              color: "primary.main",
-              display: { xs: "none", sm: "block" },
-              textShadow: "0 1px 8px rgba(0,0,0,0.08)",
-            }}>
-            Memomaker
-          </Typography>
         </Box>
 
         {/* Desktop Navigation */}
