@@ -24,8 +24,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static file directory
-app.mount("/storage", StaticFiles(directory="storage"), name="storage")
+# Mount static file directory (serves from project root's storage/)
+app.mount("/storage", StaticFiles(directory="../storage"), name="storage")
 
 # Root endpoint
 @app.get("/")
