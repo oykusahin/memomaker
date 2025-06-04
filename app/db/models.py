@@ -18,7 +18,6 @@ class Person(Base):
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
     name = Column(String, nullable=True)
     avatar_path = Column(String, nullable=True)
-    feature_vector = Column(JSON, nullable=True)  # Store as JSON array
     faces = relationship("Face", back_populates="person")
 
 class Face(Base):
@@ -27,10 +26,11 @@ class Face(Base):
     person_id = Column(String, ForeignKey("persons.id"), nullable=True)
     image_id = Column(Integer, ForeignKey("images.id"))
     bbox = Column(JSON, nullable=True)  # {top, right, bottom, left}
-    feature_vector = Column(JSON, nullable=True)
     face_path = Column(String, nullable=True)
     person = relationship("Person", back_populates="faces")
     image = relationship("Image", back_populates="faces")
+
+from sqlalchemy.dialects.postgresql import ARRAY
 
 class ScrapbookItem(Base):
     __tablename__ = "scrapbook_items"
@@ -40,3 +40,4 @@ class ScrapbookItem(Base):
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
     processing_status = Column(String, nullable=True)
+    selected_face_ids = Column(ARRAY(String), nullable=True)  # <-- NEW COLUMN
