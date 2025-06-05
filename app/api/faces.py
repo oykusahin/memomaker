@@ -5,23 +5,22 @@ from db.models import ScrapbookItem, Face, Person
 from pydantic import BaseModel
 from typing import List
 
-class SelectedFacesRequest(BaseModel):
-    face_ids: List[str]
-    scrapbook_id: int
+class SelectedPersonsRequest(BaseModel):
+    person_ids: List[str]
 
 router = APIRouter()
 
-@router.post("/selected_faces/")
-def save_selected_faces(
-    req: SelectedFacesRequest,
+@router.post("/selected_persons/")
+def save_selected_persons(
+    req: SelectedPersonsRequest,
     db: Session = Depends(get_db)
 ):
-    scrapbook = db.query(ScrapbookItem).filter(ScrapbookItem.id == req.scrapbook_id).first()
-    if not scrapbook:
-        raise HTTPException(status_code=404, detail="Scrapbook not found")
-    scrapbook.selected_face_ids = req.face_ids
+    # Set is_selected=True for selected, False for others
+    all_persons = db.query(Person).all()
+    for person in all_persons:
+        person.is_selected = person.id in req.person_ids
     db.commit()
-    return {"status": "ok"}
+    return {"status": "ok", "selected_person_ids": req.person_ids}
 
 @router.get("/faces/")
 def get_faces(db: Session = Depends(get_db)):
@@ -34,15 +33,6 @@ def get_faces(db: Session = Depends(get_db)):
             "img": "/" + face.face_path if face.face_path else "",
             "name": person.name if person else "",
             "person_id": face.person_id,
+            "person_is_selected": person.is_selected if person else False,
         })
     return result
-
-@router.patch("/faces/person/{person_id}/")
-def update_person_name(person_id: str, name: str = Query(...), db: Session = Depends(get_db)):
-    person = db.query(Person).filter(Person.id == person_id).first()
-    if not person:
-        raise HTTPException(status_code=404, detail="Person not found")
-    person.name = name
-    db.commit()
-    db.refresh(person)
-    return {"id": person.id, "name": person.name}

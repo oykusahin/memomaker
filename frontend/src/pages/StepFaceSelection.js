@@ -5,11 +5,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getNextRoute, getPreviousRoute } from "../utils/navigation";
 import axios from "axios";
 
-const SCRAPBOOK_ID = 1; // Replace with dynamic value if needed
-
 const StepFaceSelection = () => {
   const [detectedFaces, setDetectedFaces] = useState([]);
-  const [selectedFaces, setSelectedFaces] = useState([]);
+  const [selectedPersons, setSelectedPersons] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const next = getNextRoute(location.pathname);
@@ -21,22 +19,23 @@ const StepFaceSelection = () => {
     });
   }, []);
 
-  const toggleFace = (id) => {
-    setSelectedFaces((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
+  // Toggle by person_id, not face.id
+  const togglePerson = (person_id) => {
+    setSelectedPersons((prev) =>
+      prev.includes(person_id)
+        ? prev.filter((p) => p !== person_id)
+        : [...prev, person_id]
     );
   };
 
   const handleNext = async () => {
     try {
-      await axios.post("http://localhost:8000/api/selected_faces/", {
-        face_ids: selectedFaces,
-        scrapbook_id: SCRAPBOOK_ID,
+      await axios.post("http://localhost:8000/api/selected_persons/", {
+        person_ids: selectedPersons,
       });
       navigate(next);
     } catch (error) {
-      // Optionally handle error
-      console.error("Failed to save selected faces:", error);
+      console.error("Failed to save selected persons:", error);
     }
   };
 
@@ -73,11 +72,11 @@ const StepFaceSelection = () => {
 
         <Grid container spacing={4} justifyContent="center">
           {detectedFaces.map((face) => {
-            const selected = selectedFaces.includes(face.id);
+            const selected = selectedPersons.includes(face.person_id);
             return (
               <Grid item xs={6} sm={3} key={face.id}>
                 <Box
-                  onClick={() => toggleFace(face.id)}
+                  onClick={() => togglePerson(face.person_id)}
                   sx={{
                     cursor: "pointer",
                     border: selected
@@ -148,7 +147,7 @@ const StepFaceSelection = () => {
                 size="large"
                 color="secondary"
                 sx={{ px: 5, fontWeight: 700, borderRadius: 3 }}
-                disabled={selectedFaces.length === 0}
+                disabled={selectedPersons.length === 0}
                 onClick={handleNext}>
                 Next
               </Button>
