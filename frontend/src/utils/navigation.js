@@ -1,4 +1,12 @@
-export const steps = ["/upload", "/gallery"];
+export const steps = [
+  "/upload",
+  "/face-selection",
+  "/gallery",
+  "/page-number",
+  "/select-size",
+  "/cover-page-design",
+  "/scrapbook",
+];
 
 export const getNextRoute = (current) => {
   const index = steps.indexOf(current);
