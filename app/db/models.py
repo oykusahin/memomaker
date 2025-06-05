@@ -14,9 +14,10 @@ class Image(Base):
     longitude = Column(Float, nullable=True)
     description_text = Column(String, nullable=True)
     faces = relationship("Face", back_populates="image")
+    person_ids = Column(ARRAY(String), nullable=True)
 
 class Person(Base):
-    __tablename__ = "persons"
+    __tablename__ = "person"
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
     name = Column(String, nullable=True)
     avatar_path = Column(String, nullable=True)
@@ -26,7 +27,7 @@ class Person(Base):
 class Face(Base):
     __tablename__ = "faces"
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
-    person_id = Column(String, ForeignKey("persons.id"), nullable=True)
+    person_id = Column(String, ForeignKey("person.id"), nullable=True)  # <-- FIXED
     image_id = Column(Integer, ForeignKey("images.id"))
     bbox = Column(JSON, nullable=True)  # {top, right, bottom, left}
     face_path = Column(String, nullable=True)

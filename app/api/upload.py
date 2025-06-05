@@ -8,19 +8,25 @@ from datetime import datetime
 
 router = APIRouter()
 
+# Define the absolute storage directory
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+STORAGE_DIR = os.path.join(PROJECT_ROOT, "storage/images/")
+
 @router.post("/uploadfiles/")
 async def upload_files(files: list[UploadFile] = File(...), db: Session = Depends(get_db)):
+    os.makedirs(STORAGE_DIR, exist_ok=True)
     for file in files:
-        file_location = f"storage/{file.filename}"
+        file_location = os.path.join(STORAGE_DIR, file.filename)
         with open(file_location, "wb") as f:
             f.write(await file.read())
-        # Create image record
+        # Save relative path in DB
+        db_file_path = f"storage/images/{file.filename}"
         image = DBImage(
-            file_path=file_location,
+            file_path=db_file_path,
             datetime=datetime.now()
         )
         db.add(image)
-        db.flush()  # Get image.id
+        db.flush()
         detect_and_store_faces(file_location, image.id, db)
     db.commit()
     return {"status": "ok"}
