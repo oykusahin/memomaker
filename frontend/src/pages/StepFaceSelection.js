@@ -19,7 +19,16 @@ const StepFaceSelection = () => {
     });
   }, []);
 
-  // Toggle by person_id, not face.id
+  // Deduplicate faces by person_id so only one face per person is shown
+  const uniquePersons = [];
+  const seen = new Set();
+  for (const face of detectedFaces) {
+    if (face.person_id && !seen.has(face.person_id)) {
+      uniquePersons.push(face);
+      seen.add(face.person_id);
+    }
+  }
+
   const togglePerson = (person_id) => {
     setSelectedPersons((prev) =>
       prev.includes(person_id)
@@ -71,10 +80,10 @@ const StepFaceSelection = () => {
         </Typography>
 
         <Grid container spacing={4} justifyContent="center">
-          {detectedFaces.map((face) => {
+          {uniquePersons.map((face) => {
             const selected = selectedPersons.includes(face.person_id);
             return (
-              <Grid item xs={6} sm={3} key={face.id}>
+              <Grid item xs={6} sm={3} key={face.person_id}>
                 <Box
                   onClick={() => togglePerson(face.person_id)}
                   sx={{
