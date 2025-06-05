@@ -20,13 +20,14 @@ import EditIcon from "@mui/icons-material/Edit";
 import StepperWrapper from "../components/StepperWrapper";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getNextRoute, getPreviousRoute } from "../utils/navigation";
-import ImageDetailCard from "../components/ImageDetailCard"; // <-- New component
+import ImageDetailCard from "../components/ImageDetailCard";
 
 const StepGallery = () => {
   const [items, setItems] = useState([]);
   const [selected, setSelected] = useState({});
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [detailTarget, setDetailTarget] = useState(null);
+  const [persons, setPersons] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,10 +35,41 @@ const StepGallery = () => {
   const prev = getPreviousRoute(location.pathname);
 
   useEffect(() => {
+    // Fetch images (items)
     axios.get("http://localhost:8000/api/items/").then((res) => {
       setItems(res.data);
     });
+    // Fetch persons
+    axios.get("http://localhost:8000/api/faces/").then((res) => {
+      // Deduplicate by person_id
+      const seen = new Set();
+      const uniquePersons = [];
+      for (const face of res.data) {
+        if (face.person_id && !seen.has(face.person_id)) {
+          uniquePersons.push(face);
+          seen.add(face.person_id);
+        }
+      }
+      setPersons(
+        uniquePersons.map((p) => ({
+          id: p.person_id,
+          is_selected: p.person_is_selected,
+        }))
+      );
+    });
   }, []);
+
+  // Helper: Map person_id to is_selected
+  const personSelectedMap = {};
+  for (const p of persons) {
+    personSelectedMap[p.id] = p.is_selected;
+  }
+
+  // Filter images: show only if all person_ids are selected
+  const filteredItems = items.filter((item) => {
+    if (!item.person_ids || item.person_ids.length === 0) return false;
+    return item.person_ids.every((pid) => personSelectedMap[pid]);
+  });
 
   const handleToggleSelect = (id) => {
     setSelected((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -93,7 +125,7 @@ const StepGallery = () => {
         </Typography>
 
         <Grid container spacing={4} justifyContent="center">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <Grid item xs={12} sm={6} md={3} key={item.id}>
               <Fade in>
                 <Card
