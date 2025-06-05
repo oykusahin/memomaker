@@ -4,45 +4,44 @@ from pathlib import Path
 from PIL import Image
 import numpy as np
 import face_recognition
-from torchreid import utils
-from db.models import ScrapbookItem, Face, Person
-
-# Set up the feature extractor
-extractor = utils.FeatureExtractor(
-    model_name='osnet_x1_0',
-    model_path='app/cv/osnet_ms_d_c.pth.tar',
-    device='cpu'
-)
+from db.models import ScrapbookItem, Face, Person, Image as DBImage
 
 # Absolute path to the faces directory
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FACES_DIR = os.path.join(PROJECT_ROOT, "storage", "faces")
-
-def is_same_person(feature1, feature2, threshold=0.6):
-    feature1 = np.array(feature1)
-    feature2 = np.array(feature2)
-    similarity = np.dot(feature1, feature2) / (np.linalg.norm(feature1) * np.linalg.norm(feature2))
-    return similarity > threshold
 
 def detect_and_store_faces(image_path, image_id, db):
     os.makedirs(FACES_DIR, exist_ok=True)
 
     image = face_recognition.load_image_file(image_path)
     face_locations = face_recognition.face_locations(image)
+    face_encodings = face_recognition.face_encodings(image, face_locations)
 
+    # Get all persons and their avatar encodings
     existing_persons = db.query(Person).all()
-    person_features = []  # Leave empty or implement vector DB lookup in the future
+    person_encodings = []
+    for person in existing_persons:
+        if person.avatar_path:
+            avatar_img_path = os.path.join(PROJECT_ROOT, person.avatar_path)
+            if os.path.exists(avatar_img_path):
+                avatar_img = face_recognition.load_image_file(avatar_img_path)
+                avatar_locations = face_recognition.face_locations(avatar_img)
+                avatar_encodings = face_recognition.face_encodings(avatar_img, avatar_locations)
+                if avatar_encodings:
+                    person_encodings.append((person, avatar_encodings[0]))
 
     base_filename = Path(image_path).stem
+    detected_person_ids = set()
 
-    for idx, (top, right, bottom, left) in enumerate(face_locations):
+    for idx, (location, encoding) in enumerate(zip(face_locations, face_encodings)):
+        top, right, bottom, left = location
         face_image = image[top:bottom, left:right]
         pil_image = Image.fromarray(face_image)
-        feature = extractor(face_image)[0].tolist()
 
         matched_person = None
-        for person, avatar_feature in person_features:
-            if is_same_person(feature, avatar_feature):
+        for person, avatar_encoding in person_encodings:
+            matches = face_recognition.compare_faces([avatar_encoding], encoding, tolerance=0.5)
+            if matches[0]:
                 matched_person = person
                 break
 
@@ -62,16 +61,22 @@ def detect_and_store_faces(image_path, image_id, db):
                 avatar_path=rel_face_path
             )
             db.add(new_person)
-            db.flush()  # Get id for relationship
+            db.flush()
+            person_encodings.append((new_person, encoding))
 
-        # Store face instance
+        detected_person_ids.add(person_id)
+
         new_face = Face(
             id=face_id,
             person_id=person_id,
             image_id=image_id,
             bbox={"top": top, "right": right, "bottom": bottom, "left": left},
             face_path=rel_face_path
-            )
+        )
         db.add(new_face)
+
+    image_row = db.query(DBImage).filter(DBImage.id == image_id).first()
+    if image_row:
+        image_row.person_ids = list(detected_person_ids)
 
     db.commit()
