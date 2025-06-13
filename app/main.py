@@ -8,6 +8,7 @@ from db import models  # ensure all models are loaded
 from api.upload import router as upload_router
 from api.items import router as items_router
 from api.faces import router as faces_router
+from api.cover_titles import router as cover_titles_router
 
 # Create all tables
 models.Base.metadata.create_all(bind=engine)
@@ -36,3 +37,4 @@ def root():
 app.include_router(upload_router, prefix="/api")
 app.include_router(items_router, prefix="/api")
 app.include_router(faces_router, prefix="/api")
+app.include_router(cover_titles_router, prefix="/api")
