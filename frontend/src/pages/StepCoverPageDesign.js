@@ -12,6 +12,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Fade,
+  TextField,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getPreviousRoute, getNextRoute } from "../utils/navigation";
@@ -32,6 +33,9 @@ const StepCoverPageDesign = () => {
   const [coverImage, setCoverImage] = useState(null);
   const [aiGenerating, setAiGenerating] = useState(false);
   const [aiImage, setAiImage] = useState(null);
+  const [coverTitle, setCoverTitle] = useState(""); // New state for title
+  const [titleSuggestions, setTitleSuggestions] = useState([]); // AI suggestions
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,6 +48,22 @@ const StepCoverPageDesign = () => {
       setImages(res.data);
     });
   }, []);
+
+  // Fetch AI title suggestions
+  useEffect(() => {
+    setLoadingSuggestions(true);
+    axios
+      .post("http://localhost:8000/api/generate_cover_title/", {
+        palette: selectedPalette.name,
+      })
+      .then((res) => {
+        setTitleSuggestions(res.data.suggestions || []);
+      })
+      .catch(() => setTitleSuggestions([]))
+      .finally(() => setLoadingSuggestions(false));
+    // Only fetch when palette changes
+    // eslint-disable-next-line
+  }, [selectedPalette]);
 
   const handlePaletteSelect = (palette) => {
     setSelectedPalette(palette);
@@ -90,6 +110,45 @@ const StepCoverPageDesign = () => {
           Choose a color palette, select a cover image from your uploaded
           photos, or generate a unique cover with AI.
         </Typography>
+
+        {/* Cover Title Suggestions */}
+        <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>
+          0. Add a Cover Title
+        </Typography>
+        {loadingSuggestions ? (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            Loading suggestions...
+          </Typography>
+        ) : (
+          titleSuggestions.length > 0 && (
+            <Stack direction="row" spacing={1} sx={{ mb: 1, flexWrap: "wrap" }}>
+              {titleSuggestions.map((suggestion, idx) => (
+                <Button
+                  key={idx}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: 2,
+                    mb: 0.5,
+                  }}
+                  onClick={() => setCoverTitle(suggestion)}>
+                  {suggestion}
+                </Button>
+              ))}
+            </Stack>
+          )
+        )}
+        <TextField
+          fullWidth
+          label="Cover Title"
+          variant="outlined"
+          value={coverTitle}
+          onChange={(e) => setCoverTitle(e.target.value)}
+          sx={{ mb: 4 }}
+          inputProps={{ maxLength: 60 }}
+          placeholder="Enter your cover title"
+        />
 
         {/* Color Palette Selection */}
         <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>
@@ -228,13 +287,18 @@ const StepCoverPageDesign = () => {
           <Button
             variant="contained"
             color="primary"
-            disabled={!selectedPalette || (!coverImage && !aiImage)}
+            disabled={
+              !selectedPalette ||
+              (!coverImage && !aiImage) ||
+              !coverTitle.trim()
+            }
             onClick={() =>
               navigate(next, {
                 state: {
                   coverPalette: selectedPalette,
                   coverImage: coverImage,
                   aiImage: aiImage,
+                  coverTitle: coverTitle, // Pass title to next step
                 },
               })
             }>
