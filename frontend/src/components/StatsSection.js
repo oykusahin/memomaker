@@ -44,11 +44,6 @@ const highlights = [
     desc: "Start fast with prebuilt design templates.",
     icon: <AccessTimeIcon color="primary" sx={{ fontSize: 32 }} />,
   },
-  {
-    title: "Fully Responsive",
-    desc: "Looks great on any screen size.",
-    icon: <BackupIcon color="primary" sx={{ fontSize: 32 }} />,
-  },
 ];
 
 const StatsSection = () => {
@@ -65,34 +60,6 @@ const StatsSection = () => {
         maxWidth: "1300px",
         margin: "0 auto",
       }}>
-      {/* Top Stats */}
-      <Box
-        display="flex"
-        flexDirection={{ xs: "column", sm: "row" }}
-        justifyContent="center"
-        alignItems="center"
-        gap={4}
-        mb={4}>
-        {stats.map((stat, index) => (
-          <Box
-            key={index}
-            textAlign="center"
-            px={3}
-            flex={{ xs: "unset", sm: 1 }}>
-            {stat.icon}
-            <Typography
-              variant="h4"
-              fontWeight={700}
-              color={theme.palette.primary.main}>
-              {stat.value}
-            </Typography>
-            <Typography variant="subtitle1" color="text.primary">
-              {stat.label}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
-
       {/* Highlights Grid */}
       <Grid container spacing={3} mt={2}>
         {highlights.map((item, idx) => (
