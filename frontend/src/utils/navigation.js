@@ -2,7 +2,6 @@ export const steps = [
   "/upload",
   "/face-selection",
   "/gallery",
-  "/page-number",
   "/select-size",
   "/cover-page-design",
   "/scrapbook",
