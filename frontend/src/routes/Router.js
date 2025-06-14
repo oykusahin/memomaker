@@ -12,7 +12,6 @@ import AboutUsPage from "../pages/AboutUsPage";
 import Team from "../pages/TeamPage";
 import PrivacyPolicy from "../pages/PrivacyPolicyPage";
 import StepFaceSelection from "../pages/StepFaceSelection";
-import StepPageNumber from "../pages/StepPageNumber";
 import StepSelectSize from "../pages/StepSelectSize";
 import StepScrapbook from "../pages/StepScrapbook";
 import StepCoverPageDesign from "../pages/StepCoverPageDesign";
@@ -29,7 +28,6 @@ const AppRouter = () => {
       <Route path="/team" element={<Team />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/face-selection" element={<StepFaceSelection />} />
-      <Route path="/page-number" element={<StepPageNumber />} />
       <Route path="/select-size" element={<StepSelectSize />} />
       <Route path="/scrapbook" element={<StepScrapbook />} />
       <Route path="/cover-page-design" element={<StepCoverPageDesign />} />

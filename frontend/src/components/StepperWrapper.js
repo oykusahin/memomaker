@@ -9,8 +9,7 @@ const steps = [
   { label: "Upload Images", path: "/upload" },
   { label: "Select People", path: "/face-selection" },
   { label: "View Gallery", path: "/gallery" },
-  { label: "Select Page Number", path: "/page-number" },
-  { label: "Select Scrapbook Size", path: "/select-size" },
+  { label: "Select Page Size", path: "/select-size" },
   { label: "Cover Page Design", path: "/cover-page-design" },
   { label: "Scrapbook View", path: "/scrapbook" },
 ];
