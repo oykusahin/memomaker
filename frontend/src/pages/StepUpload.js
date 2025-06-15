@@ -80,8 +80,24 @@ const StepUpload = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: "auto", mt: 4 }}>
-      <StepperWrapper />
+    <Box sx={{ maxWidth: 700, mx: "auto", mt: 4 }}>
+      {/* Center and add spacing to the stepper */}
+      <Box sx={{ mb: 5, mt: 2, display: "flex", justifyContent: "center" }}>
+        <Paper
+          elevation={0}
+          sx={{
+            bgcolor: "transparent",
+            boxShadow: "none",
+            px: { xs: 0, sm: 2 },
+            py: 1,
+            width: "100%",
+            maxWidth: 700,
+            display: "flex",
+            justifyContent: "center",
+          }}>
+          <StepperWrapper />
+        </Paper>
+      </Box>
       <Paper
         elevation={4}
         onDragOver={(e) => e.preventDefault()}
