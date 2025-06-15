@@ -27,11 +27,36 @@ const StepperWrapper = () => {
   if (activeStep === -1) return null; // Don't show stepper on landing page
 
   return (
-    <Box sx={{ width: "100%", my: 4 }}>
-      <Stepper activeStep={activeStep} alternativeLabel>
+    <Box
+      sx={{
+        width: "100%",
+        my: 4,
+        minHeight: 80, // Ensures stable height
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
+      <Stepper
+        activeStep={activeStep}
+        alternativeLabel
+        sx={{
+          width: "100%",
+          maxWidth: 900,
+          minWidth: 320,
+          mx: "auto",
+        }}>
         {steps.map((step) => (
           <Step key={step.label}>
-            <StepLabel>{step.label}</StepLabel>
+            <StepLabel
+              sx={{
+                ".MuiStepLabel-label": {
+                  fontSize: { xs: "0.95rem", sm: "1.05rem" },
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                },
+              }}>
+              {step.label}
+            </StepLabel>
           </Step>
         ))}
       </Stepper>
