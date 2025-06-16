@@ -52,6 +52,17 @@ const StepFaceSelection = () => {
     );
   };
 
+  const handleSelectAllToggle = () => {
+    if (selectedPersons.length === uniquePersons.length) {
+      // Deselect all
+      setSelectedPersons([]);
+    } else {
+      // Select all
+      const allPersonIds = uniquePersons.map((face) => face.person_id);
+      setSelectedPersons(allPersonIds);
+    }
+  };
+
   const handleNext = async () => {
     try {
       await axios.post("http://localhost:8000/api/selected_persons/", {
@@ -93,6 +104,20 @@ const StepFaceSelection = () => {
           Choose the people you want to include in your scrapbook. Click on a
           face to select or deselect.
         </Typography>
+
+        {/* Move Select All Button here */}
+        <Box display="flex" justifyContent="flex-end" mb={2}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleSelectAllToggle}
+            disabled={uniquePersons.length === 0}
+            sx={{ fontWeight: 600, borderRadius: 3 }}>
+            {selectedPersons.length === uniquePersons.length
+              ? "Deselect All"
+              : "Select All"}
+          </Button>
+        </Box>
 
         <Grid container spacing={4} justifyContent="center">
           {uniquePersons.map((face) => {
