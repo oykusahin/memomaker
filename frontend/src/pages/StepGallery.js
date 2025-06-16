@@ -65,10 +65,10 @@ const StepGallery = () => {
     personSelectedMap[p.id] = p.is_selected;
   }
 
-  // Filter images: show only if all person_ids are selected
+  // Filter images: show if at least one person_id is selected
   const filteredItems = items.filter((item) => {
     if (!item.person_ids || item.person_ids.length === 0) return false;
-    return item.person_ids.every((pid) => personSelectedMap[pid]);
+    return item.person_ids.some((pid) => personSelectedMap[pid]);
   });
 
   const handleToggleSelect = (id) => {
