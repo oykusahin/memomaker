@@ -17,6 +17,25 @@ def detect_and_store_faces(image_path, image_id, db):
     face_locations = face_recognition.face_locations(image)
     face_encodings = face_recognition.face_encodings(image, face_locations)
 
+    # --- Filter faces by bounding box area (keep only largest faces) ---
+    # Calculate area for each face
+    face_areas = []
+    for idx, (top, right, bottom, left) in enumerate(face_locations):
+        area = (bottom - top) * (right - left)
+        face_areas.append((idx, area))
+    # Sort by area descending
+    face_areas.sort(key=lambda x: x[1], reverse=True)
+    # Heuristic: keep faces whose area is at least 60% of the largest face
+    if face_areas:
+        max_area = face_areas[0][1]
+        keep_indices = [idx for idx, area in face_areas if area >= 0.6 * max_area]
+    else:
+        keep_indices = []
+
+    # Filter face_locations and face_encodings
+    filtered_face_locations = [face_locations[i] for i in keep_indices]
+    filtered_face_encodings = [face_encodings[i] for i in keep_indices]
+
     # Get all persons and their avatar encodings
     existing_persons = db.query(Person).all()
     person_encodings = []
@@ -33,7 +52,8 @@ def detect_and_store_faces(image_path, image_id, db):
     base_filename = Path(image_path).stem
     detected_person_ids = set()
 
-    for idx, (location, encoding) in enumerate(zip(face_locations, face_encodings)):
+    # Use filtered faces
+    for idx, (location, encoding) in enumerate(zip(filtered_face_locations, filtered_face_encodings)):
         top, right, bottom, left = location
         face_image = image[top:bottom, left:right]
         pil_image = Image.fromarray(face_image)
