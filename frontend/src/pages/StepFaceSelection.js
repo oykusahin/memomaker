@@ -16,6 +16,21 @@ const StepFaceSelection = () => {
   useEffect(() => {
     axios.get("http://localhost:8000/api/faces/").then((res) => {
       setDetectedFaces(res.data);
+
+      // Restore selected persons from backend
+      const selected = [];
+      const seen = new Set();
+      for (const face of res.data) {
+        if (
+          face.person_id &&
+          face.person_is_selected && // <-- backend provides this
+          !seen.has(face.person_id)
+        ) {
+          selected.push(face.person_id);
+          seen.add(face.person_id);
+        }
+      }
+      setSelectedPersons(selected);
     });
   }, []);
 
