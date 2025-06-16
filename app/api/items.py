@@ -21,8 +21,8 @@ async def get_items(db: Session = Depends(get_db)):
         person_ids = set(img.person_ids or [])
         if not person_ids:
             continue
-        # Only include images where all person_ids are selected
-        if not all(person_selected_map.get(pid, False) for pid in person_ids):
+        # Only include images where at least one person_id is selected
+        if not any(person_selected_map.get(pid, False) for pid in person_ids):
             continue
 
         result.append({
